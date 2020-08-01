@@ -25,6 +25,19 @@
     </form>
 
     <h1>Contacts</h1>
+
+    <ul class="list-group">
+      <li class="list-group-item" v-for="contact in list" v-bind:key="contact.phone">
+        <strong>{{contact.name}}</strong>
+        <br />
+        {{contact.email}}
+        <br />
+        {{contact.phone}}
+        <br />
+        <button @click="showContact(contact.id)" class="btn btn-default btn-xs">Edit</button>
+        <button @click="deleteContact(contact.id)" class="btn btn-danger btn-xs">Delete</button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -76,9 +89,43 @@ export default {
           console.log(error);
         });
     },
+    showContact: function (id) {
+      let self = this;
+      axios.get("api/contact/" + id).then(function (response) {
+        self.contact.id = response.data.id;
+        self.contact.name = response.data.name;
+        self.contact.email = response.data.email;
+        self.contact.phone = response.data.phone;
+      });
+      self.edit = true;
+    },
     updateContact: async (id) => {
       console.log("updating contact '+id+'...");
-      return;
+      let self = this;
+      let params = Object.assign({}, self.contact);
+      axios
+        .patch("api/contact/" + id, params)
+        .then(function () {
+          self.contact.name = "";
+          self.contact.email = "";
+          self.contact.phone = "";
+          self.edit = false;
+          self.fetchContactList();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    deleteContact: function (id) {
+      let self = this;
+      axios
+        .delete("api/contact/" + id)
+        .then(function (response) {
+          self.fetchContactList();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };

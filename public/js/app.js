@@ -1924,10 +1924,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 
 
+var _this2 = undefined;
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2001,16 +2016,37 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         console.log(error);
       });
     },
+    showContact: function showContact(id) {
+      var self = this;
+      axios.get("api/contact/" + id).then(function (response) {
+        self.contact.id = response.data.id;
+        self.contact.name = response.data.name;
+        self.contact.email = response.data.email;
+        self.contact.phone = response.data.phone;
+      });
+      self.edit = true;
+    },
     updateContact: function () {
       var _updateContact = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(id) {
+        var self, params;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 console.log("updating contact '+id+'...");
-                return _context.abrupt("return");
+                self = _this2;
+                params = Object.assign({}, self.contact);
+                axios.patch("api/contact/" + id, params).then(function () {
+                  self.contact.name = "";
+                  self.contact.email = "";
+                  self.contact.phone = "";
+                  self.edit = false;
+                  self.fetchContactList();
+                })["catch"](function (error) {
+                  console.log(error);
+                });
 
-              case 2:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -2023,7 +2059,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return updateContact;
-    }()
+    }(),
+    deleteContact: function deleteContact(id) {
+      var self = this;
+      axios["delete"]("api/contact/" + id).then(function (response) {
+        self.fetchContactList();
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
   }
 });
 
@@ -20567,7 +20611,54 @@ var render = function() {
       ]
     ),
     _vm._v(" "),
-    _c("h1", [_vm._v("Contacts")])
+    _c("h1", [_vm._v("Contacts")]),
+    _vm._v(" "),
+    _c(
+      "ul",
+      { staticClass: "list-group" },
+      _vm._l(_vm.list, function(contact) {
+        return _c(
+          "li",
+          { key: contact.phone, staticClass: "list-group-item" },
+          [
+            _c("strong", [_vm._v(_vm._s(contact.name))]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v("\n      " + _vm._s(contact.email) + "\n      "),
+            _c("br"),
+            _vm._v("\n      " + _vm._s(contact.phone) + "\n      "),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-default btn-xs",
+                on: {
+                  click: function($event) {
+                    return _vm.showContact(contact.id)
+                  }
+                }
+              },
+              [_vm._v("Edit")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-danger btn-xs",
+                on: {
+                  click: function($event) {
+                    return _vm.deleteContact(contact.id)
+                  }
+                }
+              },
+              [_vm._v("Delete")]
+            )
+          ]
+        )
+      }),
+      0
+    )
   ])
 }
 var staticRenderFns = []
