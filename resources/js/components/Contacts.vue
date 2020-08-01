@@ -15,7 +15,7 @@
 
       <div class="form-group">
         <label>Phone</label>
-        <input v-model="contact.phone" type="tel" name="phone" class="form-control" />
+        <input v-model="contact.phone" type="text" name="phone" class="form-control" />
       </div>
 
       <div class="form-group">
@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  data: function () {
+  data: () => {
     return {
       edit: false,
       list: [],
@@ -44,13 +44,39 @@ export default {
   },
   mounted() {
     console.log("Contacts Component Loaded...");
+    this.fetchContactList();
   },
   methods: {
-    createContact: function () {
-      console.log("creating contact...");
-      return;
+    fetchContactList: function () {
+      console.log("Fetching contacts...");
+      axios
+        .get("api/contacts")
+        .then((response) => {
+          console.log("response", response.data);
+          this.list = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    updateContact: function (id) {
+    createContact: function () {
+      console.log("Creating contact...");
+      let self = this;
+      let params = Object.assign({}, self.contact);
+      axios
+        .post("api/contact/store", params)
+        .then(() => {
+          self.contact.name = "";
+          self.contact.email = "";
+          self.contact.phone = "";
+          self.edit = false;
+          self.fetchContactList();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    updateContact: async (id) => {
       console.log("updating contact '+id+'...");
       return;
     },
